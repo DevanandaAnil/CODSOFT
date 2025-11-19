@@ -1,0 +1,58 @@
+import java.util.Scanner;
+import java.util.Random;
+public class GuessingGame {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        int totalRounds = 0;
+        int roundsWon = 0;
+        // Start the game loop
+        while (true) {
+            // Generate a random between 1 and 100
+            int targetNumber = random.nextInt(100) + 1;
+            int attempts = 0;
+            int maxAttempts = 10;
+            boolean guessedCorrectly = false;
+            System.out.println("New Round! Try to guess the number between 1 and 100.");
+            // Start the guessing process
+            while (attempts < maxAttempts) {
+                System.out.print("Attempt " + (attempts + 1) + "/" + maxAttempts + ": Enter your guess: ");
+                int userGuess;
+                // Get the user's guess, handling non-integer input
+                if (scanner.hasNextInt()) {
+                    userGuess = scanner.nextInt();
+                } else {
+                    System.out.println("Please enter a valid integer.");
+                    scanner.next(); // Clear invalid input
+                    continue;
+                }attempts++;
+                // Compare the guess with the target number
+                if (userGuess < targetNumber) {
+                    System.out.println("Too low!");
+                } else if (userGuess > targetNumber) {
+                    System.out.println("Too high!");
+                } else {
+                    System.out.println("Correct! The number was " + targetNumber + ".");
+                    roundsWon++;
+                    guessedCorrectly = true;
+                    break;
+                }
+            }
+            // If the user didn't guess the number correctly in the allowed attempts
+            if (!guessedCorrectly) {
+                System.out.println("Sorry! You've run out of attempts. The correct number was " + targetNumber + ".");
+            }
+            totalRounds++;
+            // Ask the user if they want to play again
+            System.out.print("\nDo you want to play another round? (y/n): ");
+            String playAgain = scanner.next();
+            if (!playAgain.equalsIgnoreCase("y")) {
+                break;
+            }
+        }
+        // Game over, display the score
+        System.out.println("\nGame Over! You played " + totalRounds + " round(s) and won " + roundsWon + " round(s).");
+        System.out.println("Your score: " + roundsWon + "/" + totalRounds + " rounds won.");
+        scanner.close();
+    }
+}
