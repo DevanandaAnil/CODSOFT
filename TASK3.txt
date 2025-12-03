@@ -1,0 +1,75 @@
+import java.util.Scanner;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class CurrencyConverter {
+
+    // Function to get exchange rate from the API (manual JSON parsing)
+    public static double getRate(String base, String target) {
+        try {
+            String apiKey = "YOUR_API_KEY"; // Put your API key here
+            String urlStr = "https://v6.exchangerate-api.com/v6/" + apiKey + "/latest/" + base;
+
+            URL url = new URL(urlStr);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            Scanner sc = new Scanner(conn.getInputStream());
+            StringBuilder response = new StringBuilder();
+
+            while (sc.hasNext()) {
+                response.append(sc.nextLine());
+            }
+            sc.close();
+
+            String json = response.toString();
+
+            // Find the exchange rate value manually
+            String search = "\"" + target + "\":";
+            int index = json.indexOf(search);
+
+            if (index == -1) return -1;
+
+            int start = index + search.length();
+            int end = json.indexOf(",", start);
+
+            if (end == -1) end = json.indexOf("}", start);
+
+            return Double.parseDouble(json.substring(start, end));
+
+        } catch (Exception e) {
+            System.out.println("Error fetching rate: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Step 1: Base currency
+        System.out.print("Enter Base Currency (USD, INR, EUR): ");
+        String base = sc.next().toUpperCase();
+
+        // Step 2: Target currency
+        System.out.print("Enter Target Currency: ");
+        String target = sc.next().toUpperCase();
+
+        // Step 3: Amount
+        System.out.print("Enter amount to convert: ");
+        double amount = sc.nextDouble();
+
+        // Step 4: Fetch exchange rate
+        double rate = getRate(base, target);
+
+        if (rate == -1) {
+            System.out.println("Conversion failed. Invalid currency or API error.");
+            return;
+        }
+
+        // Step 5: Convert
+        double converted = amount * rate;
+
+        // Step 6: Output
+        System.out.printf("Converted Amount: %.2f %s\n", converted, target);
+    }
+}
